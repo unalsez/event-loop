@@ -2,8 +2,12 @@
 
 namespace event_handler
 {
-const PeriodicTimeoutEvent::source_type PeriodicTimeoutEvent::get_source_type() const
+PeriodicTimeoutEvent::PeriodicTimeoutEvent(const int64_t timeout_ms, event_callback callback)
+    : TimeoutEvent(timeout_ms, callback)
 {
-    return source_type::PERIODIC_TIMEOUT_EVENT;
+    resume();
 }
+
+void PeriodicTimeoutEvent::resume() { _type = source_type::PERIODIC_TIMEOUT_EVENT; }
+
 }  // namespace event_handler

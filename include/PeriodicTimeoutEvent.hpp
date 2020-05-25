@@ -7,9 +7,9 @@ namespace event_handler
 class PeriodicTimeoutEvent : public TimeoutEvent
 {
    public:
-    PeriodicTimeoutEvent(const int64_t timeout_ms, event_callback callback) : TimeoutEvent(timeout_ms, callback){};
+    PeriodicTimeoutEvent(const int64_t timeout_ms, event_callback callback);
     virtual ~PeriodicTimeoutEvent() = default;
 
-    const source_type get_source_type() const override;
+    void resume() override;
 };
 }  // namespace event_handler

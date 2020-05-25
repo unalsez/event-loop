@@ -12,7 +12,7 @@ class TimeoutEvent : public EventSource
     TimeoutEvent(const int64_t timeout_ms, event_callback callback);
     virtual ~TimeoutEvent() = default;
 
-    const source_type get_source_type() const override;
+    void resume() override;
     void sync();
     const bool is_timeout_reached();
 

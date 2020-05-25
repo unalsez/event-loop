@@ -6,9 +6,10 @@ TimeoutEvent::TimeoutEvent(const int64_t timeout_ms, event_callback callback)
     : EventSource(callback), timeout(timeout_ms)
 {
     sync();
+    resume();
 };
 
-const TimeoutEvent::source_type TimeoutEvent::get_source_type() const { return source_type::TIMEOUT_EVENT; }
+void TimeoutEvent::resume() { _type = source_type::TIMEOUT_EVENT; }
 
 void TimeoutEvent::sync() { last_sync = std::chrono::system_clock::now(); }
 

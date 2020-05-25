@@ -63,6 +63,13 @@ void EventLoop::run(const int64_t freq_ms)
                 break;
             }
 
+            case EventSource::source_type::STOPPED_EVENT:
+            {
+                event_queue.emplace(source);
+                break;
+            }
+
+            case EventSource::source_type::REMOVED_EVENT:
             default:
             {
                 break;
