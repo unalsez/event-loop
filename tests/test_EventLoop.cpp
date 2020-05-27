@@ -94,3 +94,34 @@ TEST(eventloop, suspend_resume_remove)
 
     loop_run.join();
 }
+
+TEST(eventloop, stop_loop)
+{
+    const int64_t timeout_ms = 100;
+    std::mutex _mutex;
+    uint32_t counter = 0;
+
+    auto periodic_timeout_source = std::make_shared<event_handler::PeriodicTimeoutEvent>(timeout_ms, [&]() {
+        std::lock_guard<std::mutex> guard(_mutex);
+        std::cout << "From periodic_timeout_source: " << ++counter << std::endl;
+    });
+
+    event_handler::EventLoop loop;
+    ASSERT_TRUE(loop.add_event_source(periodic_timeout_source));
+
+    std::thread loop_run(&event_handler::EventLoop::run, std::ref(loop), 0);
+
+    while (true)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        std::lock_guard<std::mutex> guard(_mutex);
+        if (counter >= 5)
+        {
+            loop.stop();
+            break;
+        }
+    }
+
+    ASSERT_LE(counter, 6);
+    loop_run.join();
+}

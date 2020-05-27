@@ -12,6 +12,7 @@ bool EventLoop::add_event_source(std::shared_ptr<EventSource> source)
 {
     if (source->get_source_type() != EventSource::source_type::UKNOWN_EVENT)
     {
+        std::lock_guard<std::mutex> guard(mtx);
         event_queue.emplace(source);
         return true;
     }
@@ -23,8 +24,16 @@ bool EventLoop::add_event_source(std::shared_ptr<EventSource> source)
 
 void EventLoop::run(const int64_t freq_ms)
 {
-    while (!event_queue.empty())
+    while (true)
     {
+        std::this_thread::sleep_for(std::chrono::milliseconds(freq_ms));
+        std::lock_guard<std::mutex> guard(mtx);
+
+        if (event_queue.empty())
+        {
+            break;
+        }
+
         auto source = event_queue.front();
         event_queue.pop();
 
@@ -75,8 +84,13 @@ void EventLoop::run(const int64_t freq_ms)
                 break;
             }
         }
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(freq_ms));
     }
+}
+
+void EventLoop::stop()
+{
+    std::lock_guard<std::mutex> guard(mtx);
+    std::queue<std::shared_ptr<EventSource>> empty;
+    std::swap(event_queue, empty);
 }
 }  // namespace event_handler

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <mutex>
 
 namespace event_handler
 {
@@ -22,12 +23,13 @@ class EventSource
     EventSource(event_callback callback) : callback(callback){};
     virtual ~EventSource() = default;
 
-    virtual const source_type get_source_type() const;
+    const source_type get_source_type();
     virtual void resume();
     void suspend();
     void remove();
 
     event_callback callback;
-    source_type _type{source_type::UKNOWN_EVENT};
+    source_type src_type{source_type::UKNOWN_EVENT};
+    std::mutex mtx;
 };
 }  // namespace event_handler

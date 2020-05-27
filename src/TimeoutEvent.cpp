@@ -9,7 +9,11 @@ TimeoutEvent::TimeoutEvent(const int64_t timeout_ms, event_callback callback)
     resume();
 };
 
-void TimeoutEvent::resume() { _type = source_type::TIMEOUT_EVENT; }
+void TimeoutEvent::resume()
+{
+    std::lock_guard<std::mutex> guard(mtx);
+    src_type = source_type::TIMEOUT_EVENT;
+}
 
 void TimeoutEvent::sync() { last_sync = std::chrono::system_clock::now(); }
 

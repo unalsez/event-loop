@@ -8,6 +8,10 @@ PeriodicTimeoutEvent::PeriodicTimeoutEvent(const int64_t timeout_ms, event_callb
     resume();
 }
 
-void PeriodicTimeoutEvent::resume() { _type = source_type::PERIODIC_TIMEOUT_EVENT; }
+void PeriodicTimeoutEvent::resume()
+{
+    std::lock_guard<std::mutex> guard(mtx);
+    src_type = source_type::PERIODIC_TIMEOUT_EVENT;
+}
 
 }  // namespace event_handler
